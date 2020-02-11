@@ -3,6 +3,7 @@ package fr.isen.nevadaodyssey
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import kotlinx.android.synthetic.main.activity_black_jack.*
 import kotlin.random.Random
 
 class BlackJackActivity : AppCompatActivity() {
@@ -31,6 +32,8 @@ class BlackJackActivity : AppCompatActivity() {
         }
         Log.d("InitParty", "This is the new size of the deck :"+deck.size)
         Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
+        playerCard.text=printCard(player)
+        dealerCard.text=printCard(dealer)
     }
     fun initParty(deck: ArrayList<Card>,player:Player, dealer:Player)
     {
@@ -44,6 +47,34 @@ class BlackJackActivity : AppCompatActivity() {
         var rand = (0..deck.size).random()
         player.addCard(deck[rand])
         deck.removeAt(rand)
+    }
+    fun stateParty(player: Player,dealer: Player,bet: Int)
+    {
+        when {
+            player.getTotalPoints()>dealer.getTotalPoints() -> {
+                Log.d("Party","Player win and dealer loose")
+                player.addRemoveMoney(2*bet)
+            }
+            player.getTotalPoints()==dealer.getTotalPoints() -> {
+                Log.d("Party","It's a draw")
+                player.addRemoveMoney(bet)
+            }
+            else -> {
+                Log.d("Party","Player loose and dealer win")
+                player.addRemoveMoney(-bet)
+            }
+        }
+    }
+    fun printCard(player: Player): String {
+        var string:String=""
+        for(i in player.cards.indices)
+        {
+            string+=player.cards[i].value
+            string+=" "
+            string+=player.cards[i].type
+            string+=" "
+        }
+        return string
     }
 }
 

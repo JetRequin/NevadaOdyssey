@@ -6,7 +6,7 @@ enum class CardValue(val number: Int) {
     FOUR(4),
     FIVE(5),
     SIX(6),
-    SEPT(7),
+    SEVEN(7),
     EIGHT(8),
     NINE(9),
     TEN(10),
