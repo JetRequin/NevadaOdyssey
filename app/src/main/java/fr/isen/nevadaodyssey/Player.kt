@@ -8,6 +8,11 @@ class Player {
         this.cards.add(Card(type = card.type,value = card.value))
     }
 
+    fun removeCards()
+    {
+        this.cards.clear()
+    }
+
     fun getTotalPoints() =
         cards.map { it.value.number }.sum()
 

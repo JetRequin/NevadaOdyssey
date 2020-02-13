@@ -12,7 +12,7 @@ class BlackJackActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_black_jack)
         var initMoney = 1000
-        var deck = createDeck()
+        var deck : ArrayList<Card> = createDeck()
         var dealer = Player()
         var player = Player()
         for(i in 0 until deck.size)
@@ -32,8 +32,51 @@ class BlackJackActivity : AppCompatActivity() {
         }
         Log.d("InitParty", "This is the new size of the deck :"+deck.size)
         Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
+        Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
         playerCard.text=printCard(player)
         dealerCard.text=printCard(dealer)
+        standButton.setOnClickListener{
+            while(dealer.getTotalPoints()<17 || dealer.getTotalPoints()<=player.getTotalPoints())
+            {
+                drawCard(deck = deck,player = dealer)
+            }
+            playerCard.text=printCard(player)
+            dealerCard.text=printCard(dealer)
+            stateParty(player,dealer,0)
+            deck=resetParty(deck,player, dealer)
+            Log.d("InitParty", "I am in the Stand button")
+            Log.d("InitParty", "This is the new size of the deck :"+deck.size)
+
+
+        }
+        hitButton.setOnClickListener{
+            Log.d("InitParty", "I am in the hit button part 1")
+            drawCard(deck = deck,player = player)
+            Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
+            if(player.getTotalPoints()>21)
+            {
+                Log.d("InitParty", "I am in the hit button part 2")
+                stateParty(player,dealer,0)
+                deck=resetParty(deck, player, dealer)
+            }
+            else if(dealer.getTotalPoints()<17)
+            {
+                Log.d("InitParty", "I am in the hit button part 3")
+                drawCard(deck = deck, player = dealer)
+                Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+            }
+            else if(dealer.getTotalPoints()>21)
+            {
+                Log.d("InitParty", "I am in the hit button part 4")
+                stateParty(player,dealer,0)
+                playerCard.text=printCard(player)
+                dealerCard.text=printCard(dealer)
+                deck=resetParty(deck, player, dealer)
+            }
+            playerCard.text=printCard(player)
+            dealerCard.text=printCard(dealer)
+            Log.d("InitParty", "I am in the hit button part 5")
+        }
     }
     fun initParty(deck: ArrayList<Card>,player:Player, dealer:Player)
     {
@@ -50,19 +93,26 @@ class BlackJackActivity : AppCompatActivity() {
     }
     fun stateParty(player: Player,dealer: Player,bet: Int)
     {
-        when {
-            player.getTotalPoints()>dealer.getTotalPoints() -> {
-                Log.d("Party","Player win and dealer loose")
-                player.addRemoveMoney(2*bet)
-            }
-            player.getTotalPoints()==dealer.getTotalPoints() -> {
-                Log.d("Party","It's a draw")
-                player.addRemoveMoney(bet)
-            }
-            else -> {
-                Log.d("Party","Player loose and dealer win")
-                player.addRemoveMoney(-bet)
-            }
+        Log.d("InitParty", "Party Over")
+        if(player.getTotalPoints()>dealer.getTotalPoints() && player.getTotalPoints()<=21)
+        {
+            Log.d("Party","Player win and dealer loose")
+            player.addRemoveMoney(2*bet)
+        }
+        else if(player.getTotalPoints()==dealer.getTotalPoints() && player.getTotalPoints()<=21)
+        {
+            Log.d("Party","It's a draw")
+            player.addRemoveMoney(bet)
+        }
+        else if(dealer.getTotalPoints()>21)
+        {
+            Log.d("Party","Player win and dealer loose")
+            player.addRemoveMoney(2*bet)
+        }
+        else
+        {
+            Log.d("Party","Player loose and dealer win")
+            player.addRemoveMoney(-bet)
         }
     }
     fun printCard(player: Player): String {
@@ -75,6 +125,24 @@ class BlackJackActivity : AppCompatActivity() {
             string+=" "
         }
         return string
+    }
+    fun resetParty(deck: ArrayList<Card>, player: Player, dealer: Player) : ArrayList<Card>
+    {
+        var deckNew: ArrayList<Card>
+        if(deck.size<6)
+        {
+            deckNew= createDeck()
+            deck.clear()
+            player.removeCards()
+            dealer.removeCards()
+        }
+        else
+        {
+            deckNew=deck
+            player.removeCards()
+            dealer.removeCards()
+        }
+        return deckNew
     }
 }
 
