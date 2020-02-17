@@ -124,13 +124,14 @@
         app:layout_constraintGuide_percent="0.55" />
 
     <TextView
-        android:id="@+id/textViewLogin"
+        android:id="@+id/textViewGames"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/colorRedDarkTheme"
         android:text="@string/login"
         android:textColor="@color/colorWhite"
-        android:textSize="12sp"
+        android:textSize="16sp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/guideline7"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -143,6 +144,7 @@
         android:layout_height="0dp"
         android:background="#FFFFFF"
         android:hint="@string/user_name"
+        android:textStyle="italic"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/guideline8"
@@ -159,6 +161,7 @@
         android:layout_marginTop="32dp"
         android:text="@string/button_login"
         android:textColor="@color/colorWhite"
+        android:textAllCaps="true"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
