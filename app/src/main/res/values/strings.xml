@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">NevadaOdyssey</string>
+
+    //Used on activity_login.xml
+    <string name="app_icon">App icon</string>
+    <string name="mini_games">Mini Games</string>
+    <string name="login">Enter user name</string>
+    <string name="user_name">Username</string>
+    <string name="button_login">Log in</string>
+
+    //Used on home_login.xml
+    <string name="choose_mini_games">Choose a game</string>
+    <string name="content_image_blackjack">Blackjack mini game image button</string>
+    <string name="content_image_dice">Poker dice mini game image button</string>
+    <string name="content_image_slot_machine">Slot machine mini game image button</string>
+    <string name="content_image_roulette">Roulette mini game image button</string>
+
 </resources>
