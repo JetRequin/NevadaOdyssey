@@ -1,10 +1,15 @@
 package fr.isen.nevadaodyssey
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.activity_black_jack.*
-import kotlin.random.Random
+import java.util.*
+
 
 class BlackJackActivity : AppCompatActivity() {
 
@@ -21,115 +26,102 @@ class BlackJackActivity : AppCompatActivity() {
         }
         Log.d("Deck", "This is the size of the deck :"+deck.size)
         player.initMoney(initMoney)
-        initParty(deck,player, dealer)
-        for(i in player.cards.indices)
-        {
-            Log.d("InitParty","Player has "+player.cards[i].value +" of " +player.cards[i].type)
-        }
-        for(i in dealer.cards.indices)
-        {
-            Log.d("InitParty","Dealer has "+dealer.cards[i].value +" of " +dealer.cards[i].type)
-        }
-        Log.d("InitParty", "This is the new size of the deck :"+deck.size)
-        Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
-        Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+        initParty(deck,player, dealer,playerSet,dealerSet)
+        showConsoleCards(player, dealer, deck)
         playerCard.text=printCard(player)
         dealerCard.text=printCard(dealer)
-        standButton.setOnClickListener{
-            while(dealer.getTotalPoints()<17 || dealer.getTotalPoints()<=player.getTotalPoints())
-            {
-                drawCard(deck = deck,player = dealer)
-            }
-            playerCard.text=printCard(player)
-            dealerCard.text=printCard(dealer)
-            stateParty(player,dealer,0)
-            deck=resetParty(deck,player, dealer)
-            Log.d("InitParty", "I am in the Stand button")
-            Log.d("InitParty", "This is the new size of the deck :"+deck.size)
-
-
-        }
-        hitButton.setOnClickListener{
-            Log.d("InitParty", "I am in the hit button part 1")
-            drawCard(deck = deck,player = player)
+        hitButton.setOnClickListener {
+            drawCard(deck = deck,player = player,linearLayout = playerSet)
             Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
-            if(player.getTotalPoints()>21)
+            playerCard.text=printCard(player)
+            if(burst(player))
             {
-                Log.d("InitParty", "I am in the hit button part 2")
-                stateParty(player,dealer,0)
+                endPartyLoosePlayer(player,0)
                 deck=resetParty(deck, player, dealer)
-            }
-            else if(dealer.getTotalPoints()<17)
-            {
-                Log.d("InitParty", "I am in the hit button part 3")
-                drawCard(deck = deck, player = dealer)
-                Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
-            }
-            else if(dealer.getTotalPoints()>21)
-            {
-                Log.d("InitParty", "I am in the hit button part 4")
-                stateParty(player,dealer,0)
+                removeCards(playerSet)
+                removeCards(dealerSet)
+                initParty(deck,player, dealer,playerSet,dealerSet)
                 playerCard.text=printCard(player)
                 dealerCard.text=printCard(dealer)
-                deck=resetParty(deck, player, dealer)
+                Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
+                Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
             }
+            Log.d("InitParty", "This is the new size of the deck :"+deck.size)
+        }
+        standButton.setOnClickListener {
+            while(dealer.getTotalPoints()<17 && !burst(dealer) || player.getTotalPoints()>dealer.getTotalPoints())
+            {
+                drawCard(deck=deck,player = dealer,linearLayout = playerSet)
+            }
+            Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+            dealerCard.text=printCard(dealer)
+            if(burst(dealer))
+            {
+                endPartyWinPlayer(player,0)
+            }
+            else
+            {
+                endPartyWithoutBurst(player,dealer,0)
+            }
+            deck=resetParty(deck, player, dealer)
+            removeCards(playerSet)
+            removeCards(dealerSet)
+            initParty(deck,player, dealer,playerSet,dealerSet)
             playerCard.text=printCard(player)
             dealerCard.text=printCard(dealer)
-            Log.d("InitParty", "I am in the hit button part 5")
+            showConsoleCards(player, dealer, deck)
         }
+
     }
-    fun initParty(deck: ArrayList<Card>,player:Player, dealer:Player)
+    fun initParty(deck: ArrayList<Card>,player:Player, dealer:Player, playerLayout: LinearLayout, dealerLayout: LinearLayout)
     {
-        drawCard(deck = deck,player = player)
-        drawCard(deck = deck,player = dealer)
-        drawCard(deck = deck,player = player)
-        drawCard(deck = deck,player = dealer)
+        drawCard(deck = deck,player = player,linearLayout = playerLayout)
+        drawCard(deck = deck,player = dealer, linearLayout = dealerLayout)
+        drawCard(deck = deck,player = player, linearLayout = playerLayout)
+        drawCard(deck = deck,player = dealer, linearLayout = dealerLayout)
     }
-    fun drawCard(deck: ArrayList<Card>,player:Player)
+    fun drawCard(deck: ArrayList<Card>,player:Player,linearLayout: LinearLayout)
     {
-        var rand = (0..deck.size).random()
+        var rand = (0 until deck.size).random()
+        //Log.d("Party", "Random value :$rand")
         player.addCard(deck[rand])
+        showCard(player.cards.last(),linearLayout)
         deck.removeAt(rand)
     }
-    fun stateParty(player: Player,dealer: Player,bet: Int)
+    fun endPartyWinPlayer(player: Player,bet: Int)
     {
-        Log.d("InitParty", "Party Over")
-        if(player.getTotalPoints()>dealer.getTotalPoints() && player.getTotalPoints()<=21)
-        {
-            Log.d("Party","Player win and dealer loose")
-            player.addRemoveMoney(2*bet)
-        }
-        else if(player.getTotalPoints()==dealer.getTotalPoints() && player.getTotalPoints()<=21)
-        {
-            Log.d("Party","It's a draw")
-            player.addRemoveMoney(bet)
-        }
-        else if(dealer.getTotalPoints()>21)
-        {
-            Log.d("Party","Player win and dealer loose")
-            player.addRemoveMoney(2*bet)
-        }
-        else
-        {
-            Log.d("Party","Player loose and dealer win")
-            player.addRemoveMoney(-bet)
+        player.addRemoveMoney(2*bet)
+        Log.d("Party", "Player win")
+    }
+    fun endPartyLoosePlayer(player: Player,bet: Int)
+    {
+        player.addRemoveMoney(-bet)
+        Log.d("Party", "Player loose")
+    }
+
+    fun endPartyWithoutBurst(player: Player,dealer: Player,bet: Int)
+    {
+        when {
+            player.getTotalPoints()>dealer.getTotalPoints() -> {
+                endPartyWinPlayer(player,bet)
+            }
+            player.getTotalPoints()<dealer.getTotalPoints() -> {
+                endPartyLoosePlayer(player,bet)
+            }
+            else -> {
+                player.addRemoveMoney(bet)
+                Log.d("Party", "it's a draw")
+            }
         }
     }
+
     fun printCard(player: Player): String {
-        var string:String=""
-        for(i in player.cards.indices)
-        {
-            string+=player.cards[i].value
-            string+=" "
-            string+=player.cards[i].type
-            string+=" "
-        }
-        return string
+        return player.getTotalPoints().toString()+" points"
     }
     fun resetParty(deck: ArrayList<Card>, player: Player, dealer: Player) : ArrayList<Card>
     {
         var deckNew: ArrayList<Card>
-        if(deck.size<6)
+        if(deck.size<10)
         {
             deckNew= createDeck()
             deck.clear()
@@ -143,6 +135,123 @@ class BlackJackActivity : AppCompatActivity() {
             dealer.removeCards()
         }
         return deckNew
+    }
+
+    fun burst(player: Player) : Boolean
+    {
+        return player.getTotalPoints()>21
+    }
+
+    fun delay(callBack:()-> Unit)
+    {
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                callBack.invoke()
+            }
+        }, 2000)
+    }
+    fun showConsoleCards(player: Player,dealer: Player,deck: ArrayList<Card>)
+    {
+        for(i in player.cards.indices)
+        {
+            Log.d("InitParty","Player has "+player.cards[i].value +" of " +player.cards[i].type)
+        }
+        for(i in dealer.cards.indices)
+        {
+            Log.d("InitParty","Dealer has "+dealer.cards[i].value +" of " +dealer.cards[i].type)
+        }
+        Log.d("InitParty", "This is the new size of the deck :"+deck.size)
+        Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
+        Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+
+    }
+    fun showCard(card: Card, linearLayout: LinearLayout)
+    {
+        val image = ImageView(this).apply {
+            val id = context.resources.getIdentifier(associateCard(card), "drawable", context.packageName)
+            Log.d("Party", "Id value is $id")
+            setImageResource(id)
+
+            // set the ImageView bounds to match the Drawable's dimensions
+            adjustViewBounds = true
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams.width=300
+            layoutParams.height=300
+        }
+
+
+        // Add the ImageView to the layout.
+       linearLayout.addView(image)
+
+    }
+
+    fun removeCards(linearLayout: LinearLayout)
+    {
+        linearLayout.removeAllViewsInLayout()
+    }
+
+    fun associateCard(card: Card): String
+    {
+        var stringCard : String = when (card.type) {
+            CardType.DIAMONDS -> {
+                "d_"
+            }
+            CardType.CLUBS -> {
+                "c_"
+            }
+            CardType.HEARTS -> {
+                "h_"
+            }
+            CardType.SPADES -> {
+                "s_"
+            }
+        }
+
+        when (card.value) {
+            CardValue.AS -> {
+                stringCard += "a"
+            }
+            CardValue.TWO -> {
+                stringCard += "2"
+            }
+            CardValue.THREE -> {
+                stringCard += "3"
+            }
+            CardValue.FOUR -> {
+                stringCard += "4"
+            }
+            CardValue.FIVE -> {
+                stringCard += "5"
+            }
+            CardValue.SIX -> {
+                stringCard += "6"
+            }
+            CardValue.SEVEN -> {
+                stringCard += "7"
+            }
+            CardValue.EIGHT -> {
+                stringCard += "8"
+            }
+            CardValue.NINE -> {
+                stringCard += "9"
+            }
+            CardValue.TEN -> {
+                stringCard += "10"
+            }
+            CardValue.JACK -> {
+                stringCard += "j"
+            }
+            CardValue.QUEEN -> {
+                stringCard += "q"
+            }
+            CardValue.KING -> {
+                stringCard += "k"
+            }
+        }
+        Log.d("Party", "String value is $stringCard")
+        return stringCard
     }
 }
 
