@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.activity_black_jack.*
 import java.util.*
 
@@ -16,67 +15,83 @@ class BlackJackActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_black_jack)
-        var initMoney = 1000
         var deck : ArrayList<Card> = createDeck()
         var dealer = Player()
         var player = Player()
+        var resetParty : Boolean = false
         for(i in 0 until deck.size)
         {
             Log.d("Deck","Your card is "+deck[i].value +" of " +deck[i].type)
         }
         Log.d("Deck", "This is the size of the deck :"+deck.size)
-        player.initMoney(initMoney)
+        val mIntent = intent
+        var money = mIntent.getIntExtra("money", 10000)
+        player.initMoney(money)
+        Log.d("InitParty", "You have "+ player.money+" dollars")
         initParty(deck,player, dealer,playerSet,dealerSet)
         showConsoleCards(player, dealer, deck)
         playerCard.text=printCard(player)
-        dealerCard.text=printCard(dealer)
         hitButton.setOnClickListener {
-            drawCard(deck = deck,player = player,linearLayout = playerSet)
-            Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
-            playerCard.text=printCard(player)
-            if(burst(player))
+            if(!resetParty)
             {
-                endPartyLoosePlayer(player,0)
+                drawCard(deck = deck,player = player,linearLayout = playerSet)
+                Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
+                playerCard.text=printCard(player)
+                if(burst(player))
+                {
+                    endPartyLoosePlayer(player,0)
+                    winnerText.text="You loose"
+                    Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
+                    Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+                    resetParty=true
+                }
+                Log.d("InitParty", "This is the new size of the deck :"+deck.size)
+            }
+        }
+        standButton.setOnClickListener {
+            if(!resetParty)
+            {
+                while(dealer.getTotalPoints()<17 && !burst(dealer) || player.getTotalPoints()>dealer.getTotalPoints())
+                {
+                    drawCard(deck=deck,player = dealer,linearLayout =dealerSet)
+                }
+                Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+                if(burst(dealer))
+                {
+                    endPartyWinPlayer(player,0)
+                    winnerText.text="You win"
+                    removeCards(dealerSet)
+                    showAllCardsEvenHide(dealer,dealerSet)
+                }
+                else
+                {
+                    winnerText.text=endPartyWithoutBurst(player,dealer,0)
+                    removeCards(dealerSet)
+                    showAllCardsEvenHide(dealer,dealerSet)
+
+                }
+                resetParty=true
+            }
+        }
+        resetButton.setOnClickListener {
+            if(resetParty)
+            {
                 deck=resetParty(deck, player, dealer)
                 removeCards(playerSet)
                 removeCards(dealerSet)
+                playerCard.text=printCard(player)
                 initParty(deck,player, dealer,playerSet,dealerSet)
                 playerCard.text=printCard(player)
-                dealerCard.text=printCard(dealer)
-                Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
-                Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+                showConsoleCards(player, dealer, deck)
+                resetParty=false
             }
-            Log.d("InitParty", "This is the new size of the deck :"+deck.size)
-        }
-        standButton.setOnClickListener {
-            while(dealer.getTotalPoints()<17 && !burst(dealer) || player.getTotalPoints()>dealer.getTotalPoints())
-            {
-                drawCard(deck=deck,player = dealer,linearLayout = playerSet)
-            }
-            Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
-            dealerCard.text=printCard(dealer)
-            if(burst(dealer))
-            {
-                endPartyWinPlayer(player,0)
-            }
-            else
-            {
-                endPartyWithoutBurst(player,dealer,0)
-            }
-            deck=resetParty(deck, player, dealer)
-            removeCards(playerSet)
-            removeCards(dealerSet)
-            initParty(deck,player, dealer,playerSet,dealerSet)
-            playerCard.text=printCard(player)
-            dealerCard.text=printCard(dealer)
-            showConsoleCards(player, dealer, deck)
         }
 
     }
     fun initParty(deck: ArrayList<Card>,player:Player, dealer:Player, playerLayout: LinearLayout, dealerLayout: LinearLayout)
     {
         drawCard(deck = deck,player = player,linearLayout = playerLayout)
-        drawCard(deck = deck,player = dealer, linearLayout = dealerLayout)
+        drawHideCard(deck = deck, dealer = dealer, dealerLayout = dealerLayout)
         drawCard(deck = deck,player = player, linearLayout = playerLayout)
         drawCard(deck = deck,player = dealer, linearLayout = dealerLayout)
     }
@@ -88,6 +103,54 @@ class BlackJackActivity : AppCompatActivity() {
         showCard(player.cards.last(),linearLayout)
         deck.removeAt(rand)
     }
+    fun drawHideCard(deck: ArrayList<Card>, dealer: Player, dealerLayout: LinearLayout)
+    {
+        var rand = (0 until deck.size).random()
+        dealer.addCard(deck[rand])
+        val image = ImageView(this).apply {
+            val id = context.resources.getIdentifier("gray_back", "drawable", context.packageName)
+            //Log.d("Party", "Id value is $id")
+            setImageResource(id)
+
+            // set the ImageView bounds to match the Drawable's dimensions
+            adjustViewBounds = true
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams.width=300
+            layoutParams.height=300
+        }
+        deck.removeAt(rand)
+
+
+        // Add the ImageView to the layout.
+        dealerLayout.addView(image)
+    }
+
+    fun showAllCardsEvenHide(dealer: Player,dealerLayout: LinearLayout)
+    {
+        for(i in 0 until dealer.cards.size)
+        {
+            val image = ImageView(this).apply {
+                val id = context.resources.getIdentifier(associateCard(dealer.cards[i]), "drawable", context.packageName)
+                //Log.d("Party", "Id value is $id")
+                setImageResource(id)
+
+                // set the ImageView bounds to match the Drawable's dimensions
+                adjustViewBounds = true
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+                layoutParams.width=300
+                layoutParams.height=300
+            }
+
+
+            // Add the ImageView to the layout.
+            dealerLayout.addView(image)
+        }
+    }
+
     fun endPartyWinPlayer(player: Player,bet: Int)
     {
         player.addRemoveMoney(2*bet)
@@ -99,18 +162,21 @@ class BlackJackActivity : AppCompatActivity() {
         Log.d("Party", "Player loose")
     }
 
-    fun endPartyWithoutBurst(player: Player,dealer: Player,bet: Int)
+    fun endPartyWithoutBurst(player: Player,dealer: Player,bet: Int) : String
     {
         when {
             player.getTotalPoints()>dealer.getTotalPoints() -> {
                 endPartyWinPlayer(player,bet)
+                return "You win"
             }
             player.getTotalPoints()<dealer.getTotalPoints() -> {
                 endPartyLoosePlayer(player,bet)
+                return "You loose"
             }
             else -> {
                 player.addRemoveMoney(bet)
                 Log.d("Party", "it's a draw")
+                return "It's a draw"
             }
         }
     }
@@ -169,7 +235,7 @@ class BlackJackActivity : AppCompatActivity() {
     {
         val image = ImageView(this).apply {
             val id = context.resources.getIdentifier(associateCard(card), "drawable", context.packageName)
-            Log.d("Party", "Id value is $id")
+            //Log.d("Party", "Id value is $id")
             setImageResource(id)
 
             // set the ImageView bounds to match the Drawable's dimensions
@@ -250,7 +316,7 @@ class BlackJackActivity : AppCompatActivity() {
                 stringCard += "k"
             }
         }
-        Log.d("Party", "String value is $stringCard")
+        //Log.d("Party", "String value is $stringCard")
         return stringCard
     }
 }

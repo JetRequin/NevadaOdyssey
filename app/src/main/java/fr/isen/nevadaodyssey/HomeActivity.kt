@@ -26,10 +26,9 @@ class HomeActivity : AppCompatActivity() {
         //TODO:To each image button, link corresponding activity
 
              imageButtonBlackJack.setOnClickListener{
-                 //val intentBlackJack = Intent(this, BlackJackActivity::class.java)
-                 //startActivity(intentBlackJack)
-                 money+= 50
-                 textViewUserMoney.text = "Money:"+ money.toString() +"$"
+                 val intentBlackJack = Intent(this, BlackJackActivity::class.java)
+                 intentBlackJack.putExtra("money", money)
+                 startActivity(intentBlackJack)
              }
 
         /*
