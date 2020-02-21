@@ -19,6 +19,7 @@ class BlackJackActivity : AppCompatActivity() {
         var dealer = Player()
         var player = Player()
         var resetParty : Boolean = false
+        var resetDouble : Boolean = false
         for(i in 0 until deck.size)
         {
             Log.d("Deck","Your card is "+deck[i].value +" of " +deck[i].type)
@@ -46,6 +47,7 @@ class BlackJackActivity : AppCompatActivity() {
                     resetParty=true
                 }
                 Log.d("InitParty", "This is the new size of the deck :"+deck.size)
+                resetDouble=true
             }
         }
         standButton.setOnClickListener {
@@ -71,6 +73,7 @@ class BlackJackActivity : AppCompatActivity() {
 
                 }
                 resetParty=true
+                resetDouble=true
             }
         }
         resetButton.setOnClickListener {
@@ -83,7 +86,48 @@ class BlackJackActivity : AppCompatActivity() {
                 initParty(deck,player, dealer,playerSet,dealerSet)
                 playerCard.text=printCard(player)
                 showConsoleCards(player, dealer, deck)
+                winnerText.text=""
                 resetParty=false
+                resetDouble=false
+            }
+        }
+        doubleButton.setOnClickListener {
+            if(!resetParty && !resetDouble)
+            {
+                drawCard(deck=deck,player = player,linearLayout = playerSet)
+                playerCard.text=printCard(player)
+                if(burst(player))
+                {
+                    endPartyLoosePlayer(player,2*0)
+                    winnerText.text="You loose"
+                    removeCards(dealerSet)
+                    showAllCardsEvenHide(dealer,dealerSet)
+                }
+                else
+                {
+                    while(dealer.getTotalPoints()<17 && !burst(dealer) || player.getTotalPoints()>dealer.getTotalPoints())
+                    {
+                        drawCard(deck=deck,player = dealer,linearLayout =dealerSet)
+                    }
+                    Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+                    if(burst(dealer))
+                    {
+                        endPartyWinPlayer(player,2*0)
+                        winnerText.text="You win"
+                        removeCards(dealerSet)
+                        showAllCardsEvenHide(dealer,dealerSet)
+                    }
+                    else
+                    {
+                        winnerText.text=endPartyWithoutBurst(player,dealer,2*0)
+                        removeCards(dealerSet)
+                        showAllCardsEvenHide(dealer,dealerSet)
+
+                    }
+                }
+                resetParty=true
+                resetDouble=true
+
             }
         }
 
