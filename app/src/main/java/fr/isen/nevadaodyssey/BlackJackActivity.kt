@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.SeekBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_black_jack.*
 import java.util.*
@@ -18,8 +20,9 @@ class BlackJackActivity : AppCompatActivity() {
         var deck : ArrayList<Card> = createDeck()
         var dealer = Player()
         var player = Player()
-        var resetParty : Boolean = false
-        var resetDouble : Boolean = false
+        var bet : Int = 0
+        var resetParty = false
+        var resetDouble = false
         for(i in 0 until deck.size)
         {
             Log.d("Deck","Your card is "+deck[i].value +" of " +deck[i].type)
@@ -28,19 +31,20 @@ class BlackJackActivity : AppCompatActivity() {
         val mIntent = intent
         var money = mIntent.getIntExtra("money", 10000)
         player.initMoney(money)
+        moneyShow.text=player.money.toString()+"$"
         Log.d("InitParty", "You have "+ player.money+" dollars")
         initParty(deck,player, dealer,playerSet,dealerSet)
         showConsoleCards(player, dealer, deck)
         playerCard.text=printCard(player)
         hitButton.setOnClickListener {
-            if(!resetParty)
+            if(!resetParty && bet!=0)
             {
                 drawCard(deck = deck,player = player,linearLayout = playerSet)
                 Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
                 playerCard.text=printCard(player)
                 if(burst(player))
                 {
-                    endPartyLoosePlayer(player,0)
+                    endPartyLoosePlayer(player,bet)
                     winnerText.text="You loose"
                     Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
                     Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
@@ -51,7 +55,7 @@ class BlackJackActivity : AppCompatActivity() {
             }
         }
         standButton.setOnClickListener {
-            if(!resetParty)
+            if(!resetParty && bet!=0)
             {
                 while(dealer.getTotalPoints()<17 && !burst(dealer) || player.getTotalPoints()>dealer.getTotalPoints())
                 {
@@ -60,14 +64,14 @@ class BlackJackActivity : AppCompatActivity() {
                 Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
                 if(burst(dealer))
                 {
-                    endPartyWinPlayer(player,0)
+                    endPartyWinPlayer(player,bet)
                     winnerText.text="You win"
                     removeCards(dealerSet)
                     showAllCardsEvenHide(dealer,dealerSet)
                 }
                 else
                 {
-                    winnerText.text=endPartyWithoutBurst(player,dealer,0)
+                    winnerText.text=endPartyWithoutBurst(player,dealer,bet)
                     removeCards(dealerSet)
                     showAllCardsEvenHide(dealer,dealerSet)
 
@@ -89,16 +93,17 @@ class BlackJackActivity : AppCompatActivity() {
                 winnerText.text=""
                 resetParty=false
                 resetDouble=false
+                moneyShow.text=player.money.toString()+"$"
             }
         }
         doubleButton.setOnClickListener {
-            if(!resetParty && !resetDouble)
+            if(!resetParty && !resetDouble && bet!=0 && 2*bet<=player.money)
             {
                 drawCard(deck=deck,player = player,linearLayout = playerSet)
                 playerCard.text=printCard(player)
                 if(burst(player))
                 {
-                    endPartyLoosePlayer(player,2*0)
+                    endPartyLoosePlayer(player,2*bet)
                     winnerText.text="You loose"
                     removeCards(dealerSet)
                     showAllCardsEvenHide(dealer,dealerSet)
@@ -112,7 +117,7 @@ class BlackJackActivity : AppCompatActivity() {
                     Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
                     if(burst(dealer))
                     {
-                        endPartyWinPlayer(player,2*0)
+                        endPartyWinPlayer(player,2*bet)
                         winnerText.text="You win"
                         removeCards(dealerSet)
                         showAllCardsEvenHide(dealer,dealerSet)
@@ -129,7 +134,27 @@ class BlackJackActivity : AppCompatActivity() {
                 resetDouble=true
 
             }
+            else if(2*bet>player.money)
+            {
+                Toast.makeText(applicationContext,"You can't bet more that you have in your wallet",Toast.LENGTH_SHORT).show()
+            }
         }
+       betBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                bet=(i*player.money)/100
+                moneyShow.text=(player.money-bet).toString()+"$"
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+            }
+        })
 
     }
     fun initParty(deck: ArrayList<Card>,player:Player, dealer:Player, playerLayout: LinearLayout, dealerLayout: LinearLayout)
@@ -197,7 +222,7 @@ class BlackJackActivity : AppCompatActivity() {
 
     fun endPartyWinPlayer(player: Player,bet: Int)
     {
-        player.addRemoveMoney(2*bet)
+        player.addRemoveMoney(bet)
         Log.d("Party", "Player win")
     }
     fun endPartyLoosePlayer(player: Player,bet: Int)
@@ -218,7 +243,7 @@ class BlackJackActivity : AppCompatActivity() {
                 return "You loose"
             }
             else -> {
-                player.addRemoveMoney(bet)
+                player.addRemoveMoney(0)
                 Log.d("Party", "it's a draw")
                 return "It's a draw"
             }
