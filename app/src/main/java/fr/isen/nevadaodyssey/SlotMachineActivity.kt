@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.IEventEnd
+import fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.Util
 import kotlinx.android.synthetic.main.activity_slotmachine.*
 import kotlin.random.Random
 
@@ -23,8 +24,36 @@ class SlotMachineActivity : AppCompatActivity(), IEventEnd {
             if(image.value == image2.value && image2.value == image3.value)
             {
                 Toast.makeText(this,"Gagné",Toast.LENGTH_SHORT).show()
-                Common.SCORE += 300
-                txt_score.text = Common.SCORE.toString()
+                if (image.value == Util.bar)
+                {
+                    Common.SCORE += 250//3 barres
+                    txt_score.text = Common.SCORE.toString()
+                }
+                else if (image.value == Util.lemon)
+                {
+                    Common.SCORE += 100//3 citrons
+                    txt_score.text = Common.SCORE.toString()
+                }
+                else if (image.value == Util.watermelon)
+                {
+                    Common.SCORE += 150//3 pasteques
+                    txt_score.text = Common.SCORE.toString()
+                }
+                else if (image.value == Util.orange)
+                {
+                    Common.SCORE += 200//3 oranges
+                    txt_score.text = Common.SCORE.toString()
+                }
+                else if (image.value == Util.seven)
+                {
+                    Common.SCORE += 300//3 septs
+                    txt_score.text = Common.SCORE.toString()
+                }
+                else if (image.value == Util.triple)
+                {
+                    Common.SCORE += 900//3 triples
+                    txt_score.text = Common.SCORE.toString()
+                }
             }
             else
             {
