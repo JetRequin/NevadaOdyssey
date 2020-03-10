@@ -1,18 +1,17 @@
 package fr.isen.nevadaodyssey
 
-
 import android.annotation.SuppressLint
+import android.content.Context
+import com.squareup.seismic.ShakeDetector
+import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_dice.*
 import java.util.*
-
 
 /* =============================== LIAR'S DICE RULES ==========================
     Each player has five standard 6-sided dice
@@ -35,98 +34,125 @@ If the player challenges the previous bid, all players reveal their dice.
  ==============================================================================
  */
 
-class PokerDiceActivity: AppCompatActivity()  {
+class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
+    var amountBetValue = 0
+    var faceBetValue = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dice)
 
+// ==== SHAKE DETECTION ===========================================
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val sd = ShakeDetector(this)
+        sd.start(sensorManager)
+
         //Declare a DicePlayer() type
         val player = DicePlayer()
         val computer = DicePlayer()
+        //hearShake()
+
         //Init turn with the correct amount of die to roll
-        initTurn( player,computer)
-        playTurn(player,computer)
+        initTurn(player, computer)
+        //playTurn(player, computer)
 
+        buttonBet.setOnClickListener {
+            playTurn(player,computer)
+        }
 
+        buttonLie.setOnClickListener{
+
+        }
+    }
+
+    override fun hearShake() {
+        Toast.makeText(applicationContext,"SHAAAKE",Toast.LENGTH_SHORT).show()
     }
 
 
-//Init party: roll the dice for both sides, choose the first better
-private fun initTurn( player:DicePlayer, computer:DicePlayer) {
-    //Give each player his dice
-    getDiceHand(player)
-    getDiceHand(computer)
+    //Init party: roll the dice for both sides, choose the first better
+    private fun initTurn(player: DicePlayer, computer: DicePlayer) {
+        //Give each player his dice
+        getDiceHand(player)
+        getDiceHand(computer)
 
-    printDiceImages(player,playerDice)
+        printDiceImages(player, playerDice)
+        amountBetValue = 0
+        faceBetValue = 0
 
-    //TODO: HIGHEST BET VALUE = 0
-    //Choose who is going to bet first
-    if ((1..player.maxDieValue).random() < (1..computer.maxDieValue).random() ){
-        computer.isBetting = true
+        //Choose who is going to bet first
+        if ((1..player.maxDieValue).random() < (1..computer.maxDieValue).random()) {
+            computer.isBetting = true
 
-    }
-    else{
-        player.isBetting = true
-    }
-}
-
-fun playTurn (player: DicePlayer,computer: DicePlayer){
-    // FOLLOWING BET RESULTS
-    // LOOSING PLAYER LOOSE A DIE player.numberOfDieToRoll--
-
-    // if numberOfDieToRoll = 0
-    //      ==> END TURN and lose X money
-    if (player.isBetting){
-        textViewCurrentBet.text = "Your turn to bet"
-        
-
-        //Turn change
-        player.isBetting = false
-        computer.isBetting = true
+        } else {
+            player.isBetting = true
+        }
     }
 
-    if (computer.isBetting){
-        textViewCurrentBet.text = "Computer is betting"
+    @SuppressLint("SetTextI18n")
+    private fun playTurn(player: DicePlayer, computer: DicePlayer) {
+        // if numberOfDieToRoll = 0
+        //      ==> END TURN and lose X money
+/*
+        if (player.isBetting) {
+            textViewCurrentBet.text = "BET: " + "Face:"+ faceBetValue.toString() +"Number: "+ amountBetValue.toString()
 
+            faceBetValue = editTextFaceNumber.text.toString().toInt()
+            amountBetValue = editTextHighestBet.text.toString().toInt()
+            //Turn change
+            player.isBetting = false
+            computer.isBetting = true
+        }
 
+        if (computer.isBetting) {
+            textViewCurrentBet.text = "Computer is betting"
 
+            // Have dice
+            if (amountBetValue <= computer.numberOfDicePerValue.max()!!){
+                amountBetValue = computer.numberOfDicePerValue.max()!! + 1
 
+            }
 
-        //Turn change
-        player.isBetting = true
-        computer.isBetting = false
+            // Have another
+            if (amountBetValue > computer.numberOfDicePerValue.max()!! + 2){
+                amountBetValue = computer.numberOfDicePerValue.max()!!
+            }
+            else {
+                turnLieResult(player, computer)
+            }
+
+            //Turn change
+            player.isBetting = true
+            computer.isBetting = false
+        }
+        // THE GOOD PLAYER HAVE TO PLACE A BET
+        // TWO CHOICES : LIE! OR FOLLOW
+        // COMPUTER = "Bet" if he play: Max possessed value +1
+        //                     if player play AND if he has at least 1: Player value +1
+        //                     if player play AND if he don't have 1 and bet : < 2 : OVER BET max possed value +1
+        //            "Lie"    If he don't have any dice of bet and > 3
+        //
+        // HIGHEST BET VALUE +1
+
+ */
     }
-    // THE GOOD PLAYER HAVE TO PLACE A BET
-    // TWO CHOICES : LIE! OR FOLLOW
-    // COMPUTER = "Bet" if he play: Max possessed value +1
-    //                     if player play AND if he has at least 1: Player value +1
-    //                     if player play AND if he don't have 1 and bet : < 2 : OVER BET max possed value +1
-    //            "Lie"    If he don't have any dice of bet and > 3
-    //
-    // HIGHEST BET VALUE +1
-}
 
-fun turnResult (player: DicePlayer,computer: DicePlayer){
+    private fun turnLieResult(player: DicePlayer, computer: DicePlayer) {
 
-}
-
-fun betLoser (player: DicePlayer,computer: DicePlayer) {
-
-}
-
-private fun printDiceImages(player: DicePlayer, layout:LinearLayout){
-    val diceImages = player
-    for (i in 0 until diceImages.dice.size) {
-        val rand = (0 until diceImages.dice.size).random()
-        setImageDie(diceImages,layout)
-        diceImages.dice.removeAt(rand)
     }
-}
 
-private fun setImageDie(player: DicePlayer, layout:LinearLayout) {
+    private fun printDiceImages(player: DicePlayer, layout: LinearLayout) {
+        val diceImages = player
+        for (i in 0 until diceImages.dice.size) {
+            val rand = (0 until diceImages.dice.size).random()
+            setImageDie(diceImages, layout)
+            diceImages.dice.removeAt(rand)
+        }
+    }
+
+    private fun setImageDie(player: DicePlayer, layout: LinearLayout) {
         val image = ImageView(this).apply {
-                val id = context.resources.getIdentifier(
+            val id = context.resources.getIdentifier(
                 getImageString(player),
                 "drawable",
                 context.packageName
@@ -138,33 +164,33 @@ private fun setImageDie(player: DicePlayer, layout:LinearLayout) {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            layoutParams.width = 300
+            layoutParams.width = 200
             layoutParams.height = 300
         }
         layout.addView(image)
-}
-
-private fun getImageString(player: DicePlayer) : String {
-    return when (player.dice.last()) {
-        1 ->{
-            "die1"
-        }
-        2 ->{
-            "die2"
-        }
-        3 ->{
-            "die2"
-        }
-        4 ->{
-            "die4"
-        }
-        5 ->{
-            "die5"
-        }
-        6 ->{
-            "die6"
-        }
-        else -> "error"
     }
-}
+
+    private fun getImageString(player: DicePlayer): String {
+        return when (player.dice.last()) {
+            1 -> {
+                "die1"
+            }
+            2 -> {
+                "die2"
+            }
+            3 -> {
+                "die2"
+            }
+            4 -> {
+                "die4"
+            }
+            5 -> {
+                "die5"
+            }
+            6 -> {
+                "die6"
+            }
+            else -> "error"
+        }
+    }
 }

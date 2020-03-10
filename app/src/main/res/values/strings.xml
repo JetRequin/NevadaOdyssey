@@ -15,4 +15,10 @@
     <string name="content_image_slot_machine">Slot machine mini game image button</string>
     <string name="content_image_roulette">Roulette mini game image button</string>
 
+    //Used on activity_dice.xml
+    <string name="button_bet">BET</string>
+    <string name="button_lie">LIE!</string>
+    <string name="textViewFace">Face chosen</string>
+    <string name="textViewAmount">Number</string>
+
 </resources>
