@@ -13,8 +13,31 @@ class Player {
         this.cards.clear()
     }
 
-    fun getTotalPoints() =
+    /*fun getTotalPoints() =
         cards.map { it.value.number }.sum()
+
+    fun getTotalPointsModifyAS(): Int {
+        return if (getTotalPoints() > 21 && CardValue.AS.number == 11) {
+            CardValue.AS.number = 1;
+            getTotalPoints()
+        } else {
+            return getTotalPoints()
+        }
+
+    }*/
+
+    fun getTotalPointsModifyAS() =
+        cards.map { it.value.number }.sum()
+
+    fun getTotalPoints(): Int {
+        return if (getTotalPointsModifyAS() > 21 && CardValue.AS.number == 11) {
+            CardValue.AS.number = 1;
+            getTotalPointsModifyAS()
+        } else {
+            return getTotalPointsModifyAS()
+        }
+
+    }
 
     fun addRemoveMoney(bet: Int) {
         money += bet

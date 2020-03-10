@@ -1,6 +1,6 @@
 package fr.isen.nevadaodyssey
 
-enum class CardValue(val number: Int) {
+enum class CardValue(var number: Int) {
     TWO(2),
     THREE(3),
     FOUR(4),

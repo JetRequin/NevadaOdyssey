@@ -49,6 +49,8 @@ class BlackJackActivity : AppCompatActivity() {
                     winnerText.text="You loose"
                     Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
                     Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+                    removeCards(dealerSet)
+                    showAllCardsEvenHide(dealer,dealerSet)
                     resetParty=true
                 }
                 Log.d("InitParty", "This is the new size of the deck :"+deck.size)
@@ -90,6 +92,7 @@ class BlackJackActivity : AppCompatActivity() {
                 removeCards(playerSet)
                 removeCards(dealerSet)
                 playerCard.text=printCard(player)
+                CardValue.AS.number=11
                 initParty(deck,player, dealer,playerSet,dealerSet)
                 playerCard.text=printCard(player)
                 showConsoleCards(player, dealer, deck)
