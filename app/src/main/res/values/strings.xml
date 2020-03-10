@@ -15,4 +15,13 @@
     <string name="content_image_slot_machine">Slot machine mini game image button</string>
     <string name="content_image_roulette">Roulette mini game image button</string>
 
+    //Used on activity_black_jack.xml
+    <string name="hit_button">HIT</string>
+    <string name="stand_button">STAND</string>
+    <string name="double_button">DOUBLE</string>
+    <string name="reset_button">RESET</string>
+
+    //Used on activity_slotmachine.xml
+    <string name="money_slotmachine">1000</string>
+
 </resources>
