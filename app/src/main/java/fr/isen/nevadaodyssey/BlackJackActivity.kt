@@ -1,6 +1,9 @@
 package fr.isen.nevadaodyssey
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,22 +18,23 @@ import java.util.*
 
 
 class BlackJackActivity : AppCompatActivity() {
+    var userPreferences: SharedPreferences? = null
+    val player = Player()
+    val dealer = Player()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_black_jack)
         var deck : ArrayList<Card> = createDeck()
-        val dealer = Player()
-        val player = Player()
         var bet = 0
         var resetParty = false
         var resetDouble = false
+        userPreferences = getSharedPreferences(UserPreferences.name, Context.MODE_PRIVATE)
+        var money = userPreferences?.getInt(UserPreferences.money,0) ?: 0
         for(i in 0 until deck.size)
         {
             Log.d("Deck","Your card is "+deck[i].value +" of " +deck[i].type)
         }
         Log.d("Deck", "This is the size of the deck :"+deck.size)
-        val mIntent = intent
-        var money: Int = mIntent.getIntExtra("money", 10000)
         player.initMoney(money)
         moneyShow.text=player.money.toString()+"$"
         Log.d("InitParty", "You have "+ player.money+" dollars")
@@ -163,6 +167,25 @@ class BlackJackActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
             }
         })
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val editor = userPreferences?.edit()
+        editor?.putInt(UserPreferences.money,player.money)
+        editor?.apply()
+        val intentHomeActivity = Intent(this, HomeActivity::class.java)
+        startActivity(intentHomeActivity)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val editor = userPreferences?.edit()
+        editor?.putInt(UserPreferences.money,player.money)
+        editor?.apply()
+        //val intentHomeActivity = Intent(this, HomeActivity::class.java)
+        //startActivity(intentHomeActivity)
 
     }
     private fun initParty(deck: ArrayList<Card>, player:Player, dealer:Player, playerLayout: LinearLayout, dealerLayout: LinearLayout)
