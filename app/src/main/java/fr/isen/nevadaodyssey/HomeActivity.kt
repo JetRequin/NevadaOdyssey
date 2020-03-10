@@ -35,13 +35,13 @@ class HomeActivity : AppCompatActivity() {
              imageButtonPokerDice.setOnClickListener {
                  val intentPokerDice = Intent(this, PokerDiceActivity::class.java)
                  startActivity(intentPokerDice)
-             }
+             }*/
 
              imageButtonRoulette.setOnClickListener{
                  val intentRoulette = Intent(this, RouletteActivity::class.java)
                  startActivity(intentRoulette)
              }
-
+/*
              imageButtonSlotMachine.setOnClickListener {
                  val intentSlotMachine = Intent(this, SlotMachineActivity::class.java)
                  startActivity(intentSlotMachine)

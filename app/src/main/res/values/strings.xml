@@ -14,5 +14,6 @@
     <string name="content_image_dice">Poker dice mini game image button</string>
     <string name="content_image_slot_machine">Slot machine mini game image button</string>
     <string name="content_image_roulette">Roulette mini game image button</string>
+    <string name="spin">SPIN</string>
 
 </resources>
