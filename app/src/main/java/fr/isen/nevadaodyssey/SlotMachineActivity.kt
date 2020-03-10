@@ -26,27 +26,27 @@ class SlotMachineActivity : AppCompatActivity(), IEventEnd {
             {
                 Toast.makeText(this,"Win",Toast.LENGTH_SHORT).show()
                 when (image.value) {
-                    Util.bar -> {
+                    Util.BAR.number -> {
                         Common.SCORE += 250//3 barres
                         txt_score.text = Common.SCORE.toString()
                     }
-                    Util.lemon -> {
+                    Util.LEMON.number -> {
                         Common.SCORE += 100//3 citrons
                         txt_score.text = Common.SCORE.toString()
                     }
-                    Util.watermelon -> {
+                    Util.LEMON.number -> {
                         Common.SCORE += 150//3 pasteques
                         txt_score.text = Common.SCORE.toString()
                     }
-                    Util.orange -> {
+                    Util.ORANGE.number -> {
                         Common.SCORE += 200//3 oranges
                         txt_score.text = Common.SCORE.toString()
                     }
-                    Util.seven -> {
+                    Util.SEVEN.number -> {
                         Common.SCORE += 300//3 septs
                         txt_score.text = Common.SCORE.toString()
                     }
-                    Util.triple -> {
+                    Util.TRIPLE.number -> {
                         Common.SCORE += 900//3 triples
                         txt_score.text = Common.SCORE.toString()
                     }
