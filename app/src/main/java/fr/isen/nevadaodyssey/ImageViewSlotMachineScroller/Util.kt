@@ -1,10 +1,10 @@
 package fr.isen.nevadaodyssey.ImageViewSlotMachineScroller
 
-enum class Util(val number: Int) {
-    BAR(0),
-    LEMON(1),
-    ORANGE(2),
-    SEVEN(3),
-    TRIPLE(4),
-    WATERMELON(5)
+enum class Util(val number: Int,val score: Int) {
+    BAR(0,250),
+    LEMON(1,100),
+    ORANGE(2,200),
+    SEVEN(3,300),
+    TRIPLE(4,900),
+    WATERMELON(5,150)
 }
