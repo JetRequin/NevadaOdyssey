@@ -39,6 +39,7 @@ class HomeActivity : AppCompatActivity() {
 
              imageButtonRoulette.setOnClickListener{
                  val intentRoulette = Intent(this, RouletteActivity::class.java)
+                 intentRoulette.putExtra("money", money)
                  startActivity(intentRoulette)
              }
 /*
