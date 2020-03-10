@@ -3,6 +3,7 @@ package fr.isen.nevadaodyssey
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -52,6 +53,7 @@ class BlackJackActivity : AppCompatActivity() {
                 }
                 Log.d("InitParty", "This is the new size of the deck :"+deck.size)
                 resetDouble=true
+                betBar.visibility = View.GONE
             }
         }
         standButton.setOnClickListener {
@@ -78,6 +80,7 @@ class BlackJackActivity : AppCompatActivity() {
                 }
                 resetParty=true
                 resetDouble=true
+                betBar.visibility = View.GONE
             }
         }
         resetButton.setOnClickListener {
@@ -94,6 +97,7 @@ class BlackJackActivity : AppCompatActivity() {
                 resetParty=false
                 resetDouble=false
                 moneyShow.text=player.money.toString()+"$"
+                betBar.visibility = View.VISIBLE
             }
         }
         doubleButton.setOnClickListener {
@@ -132,6 +136,7 @@ class BlackJackActivity : AppCompatActivity() {
                 }
                 resetParty=true
                 resetDouble=true
+                betBar.visibility = View.GONE
 
             }
             else if(2*bet>player.money)

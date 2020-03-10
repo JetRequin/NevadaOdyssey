@@ -86,18 +86,14 @@ class ImageViewSlotMachineScroller:FrameLayout {
     }
 
     private fun setImage(img: ImageView?, value: Int) {
-        if(value == Util.bar)
-            img?.setImageResource(R.drawable.bar_done)
-        else if(value == Util.lemon)
-            img?.setImageResource(R.drawable.lemon_done)
-        else if(value == Util.orange)
-            img?.setImageResource(R.drawable.orange_done)
-        else if(value == Util.seven)
-            img?.setImageResource(R.drawable.sevent_done)
-        else if(value == Util.triple)
-            img?.setImageResource(R.drawable.triple_done)
-        else if(value == Util.watermelon)
-            img?.setImageResource(R.drawable.waternelon_done)
+        when (value) {
+            Util.BAR.number -> img?.setImageResource(R.drawable.bar_done)
+            Util.LEMON.number -> img?.setImageResource(R.drawable.lemon_done)
+            Util.ORANGE.number -> img?.setImageResource(R.drawable.orange_done)
+            Util.SEVEN.number -> img?.setImageResource(R.drawable.sevent_done)
+            Util.TRIPLE.number -> img?.setImageResource(R.drawable.triple_done)
+            Util.WATERMELON.number -> img?.setImageResource(R.drawable.waternelon_done)
+        }
 
         img?.tag = value
         last_result = value
