@@ -1,11 +1,10 @@
 package fr.isen.nevadaodyssey
 import android.util.Log
-
-//dice:plural/ die:singular
+//dice:plural / die:singular
 //Just in case
 
 class DicePlayer {
-    val numberOfDieToRoll = 5
+    var numberOfDieToRoll = 5
     val maxDieValue = 6
 
     var isBetting = false
@@ -20,7 +19,7 @@ fun rollDie(player: DicePlayer) {
     player.numberOfDicePerValue[dieValue-1]++
 }
 
-// Give the entire dice hand
+// Give all the dice possible for the current numberOfDieToRoll
 fun getDiceHand(player: DicePlayer){
     for(i in 1..player.numberOfDieToRoll )
     {

@@ -13,7 +13,8 @@ class Player {
         this.cards.clear()
     }
 
-    /*fun getTotalPoints() =
+    /* AS fixed to 11
+    fun getTotalPoints() =
         cards.map { it.value.number }.sum()
 
     fun getTotalPointsModifyAS(): Int {
@@ -23,7 +24,6 @@ class Player {
         } else {
             return getTotalPoints()
         }
-
     }*/
 
     fun getTotalPointsModifyAS() =

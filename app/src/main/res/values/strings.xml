@@ -29,5 +29,19 @@
     <string name="button_lie">LIE!</string>
     <string name="textViewFace">Face chosen</string>
     <string name="textViewAmount">Number</string>
+    <string name="incorrect_bet">Incorrect bet value</string>
+    <string name="shake_dice">Shake your phone to begin playing</string>
+    <string name="truth">It was true !</string>
+    <string name="lie">It was a lie!</string>
+
+    //Used on activity_roulette.xml
+    <string name="spin">SPIN</string>
+    <string name="black_bet">Black</string>
+    <string name="red_bet">Red</string>
+    <string name="wheel_pointer">Wheel pointer, select correct value</string>
+    <string name="wheel_image">Wheel image</string>
+    <string name="wheel_bet">Bet</string>
+    <string name="bet_a_number">Bet a number</string>
+    <string name="string_0">0</string>
 
 </resources>

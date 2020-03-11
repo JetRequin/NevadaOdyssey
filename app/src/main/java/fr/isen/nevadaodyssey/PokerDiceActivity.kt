@@ -2,6 +2,8 @@ package fr.isen.nevadaodyssey
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import com.squareup.seismic.ShakeDetector
 import android.hardware.SensorManager
 import android.os.Bundle
@@ -11,7 +13,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_dice.*
-import java.util.*
+import kotlinx.android.synthetic.main.activity_roulette.*
 
 /* =============================== LIAR'S DICE RULES ==========================
     Each player has five standard 6-sided dice
@@ -30,17 +32,33 @@ or they can challenge the previous bid.
 If the player challenges the previous bid, all players reveal their dice.
     If the bid is matched or exceeded, the bidder wins.
     Otherwise the challenger wins.
+    p
 
- ==============================================================================
- */
+
+
+    //37 sectors, 9,72 deg each
+    private var factor : Float = 4.86f
+
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_roulette)
+        r = Random()
+
+        moneyAmount.text = "Money:$money$"
+ ============================================================================== */
 
 class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
-    var amountBetValue = 0
-    var faceBetValue = 0
+    var money = 0
+    private var userPreferences: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dice)
+
+        userPreferences = getSharedPreferences(UserPreferences.name, Context.MODE_PRIVATE)
+        money = userPreferences?.getInt(UserPreferences.money,0) ?: 0
+        moneyAmountDice.text = "Money:$money$"
 
 // ==== SHAKE DETECTION ===========================================
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -50,23 +68,29 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
         //Declare a DicePlayer() type
         val player = DicePlayer()
         val computer = DicePlayer()
-        //hearShake()
+        val bet = DiceBet()
 
-        //Init turn with the correct amount of die to roll
+        //Init turn with the correct amount of die to roll and first turn
         initTurn(player, computer)
-        //playTurn(player, computer)
+        //First turn
+        playTurn(player,computer,bet)
 
+// Button listener ===============================================
         buttonBet.setOnClickListener {
-            playTurn(player,computer)
+            playTurn(player,computer,bet)
         }
 
         buttonLie.setOnClickListener{
-
+            turnLieResult(player,computer,bet) //Will take a dice from looser
+            checkGameOver(player,computer) // Will check if party is over
         }
     }
 
     override fun hearShake() {
-        Toast.makeText(applicationContext,"SHAAAKE",Toast.LENGTH_SHORT).show()
+        val player = DicePlayer()
+        val computer = DicePlayer()
+        initTurn(player, computer)
+        Toast.makeText(applicationContext,"SHAKE",Toast.LENGTH_SHORT).show()
     }
 
 
@@ -75,10 +99,7 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
         //Give each player his dice
         getDiceHand(player)
         getDiceHand(computer)
-
-        printDiceImages(player, playerDice)
-        amountBetValue = 0
-        faceBetValue = 0
+        printDiceImages(player, playerDiceLayout)
 
         //Choose who is going to bet first
         if ((1..player.maxDieValue).random() < (1..computer.maxDieValue).random()) {
@@ -90,88 +111,106 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
     }
 
     @SuppressLint("SetTextI18n")
-    private fun playTurn(player: DicePlayer, computer: DicePlayer) {
-        // if numberOfDieToRoll = 0
-        //      ==> END TURN and lose X money
-/*
+    private fun playTurn(player: DicePlayer, computer: DicePlayer, bet:DiceBet) {
+        textViewCurrentBet.text = "Place a bet"
+// ====================== PLAYER BET ===========================================================
         if (player.isBetting) {
-            textViewCurrentBet.text = "BET: " + "Face:"+ faceBetValue.toString() +"Number: "+ amountBetValue.toString()
+            // Read bet
+            bet.faceBetValue = editTextFaceNumber.text.toString().toIntOrNull()
+            bet.amountBetValue = editTextHighestBet.text.toString().toIntOrNull()
 
-            faceBetValue = editTextFaceNumber.text.toString().toInt()
-            amountBetValue = editTextHighestBet.text.toString().toInt()
+            textViewCurrentBet.text = "Your bet:\n" + "Face: "+ bet.faceBetValue.toString() +"\nNumber: "+ bet.amountBetValue.toString()
             //Turn change
             player.isBetting = false
             computer.isBetting = true
         }
-
+// ====================== COMPUTER BET ========================================================
         if (computer.isBetting) {
-            textViewCurrentBet.text = "Computer is betting"
-
-            // Have dice
-            if (amountBetValue <= computer.numberOfDicePerValue.max()!!){
-                amountBetValue = computer.numberOfDicePerValue.max()!! + 1
-
+            //Extremely simple mode
+            textViewCurrentBet.text = "Computer bet:\n" + " Face: "+ bet.faceBetValue.toString() +"Number: "+ bet.amountBetValue.toString()
+            if (bet.amountBetValue == 0){
+                bet.amountBetValue = 3
+                bet.faceBetValue = 3
+            }
+/*
+            if (bet.amountBetValue <= computer.numberOfDicePerValue[bet.faceBetValue!!]){
+                    bet.amountBetValue = computer.numberOfDicePerValue[bet.faceBetValue!!] + 1
             }
 
-            // Have another
-            if (amountBetValue > computer.numberOfDicePerValue.max()!! + 2){
-                amountBetValue = computer.numberOfDicePerValue.max()!!
-            }
-            else {
-                turnLieResult(player, computer)
-            }
-
+ */
+                else {
+                    turnLieResult(computer,player,bet)
+                }
             //Turn change
             player.isBetting = true
             computer.isBetting = false
         }
-        // THE GOOD PLAYER HAVE TO PLACE A BET
-        // TWO CHOICES : LIE! OR FOLLOW
-        // COMPUTER = "Bet" if he play: Max possessed value +1
-        //                     if player play AND if he has at least 1: Player value +1
-        //                     if player play AND if he don't have 1 and bet : < 2 : OVER BET max possed value +1
-        //            "Lie"    If he don't have any dice of bet and > 3
-        //
-        // HIGHEST BET VALUE +1
-
- */
     }
 
-    private fun turnLieResult(player: DicePlayer, computer: DicePlayer) {
-
+    private fun turnLieResult(player: DicePlayer, liar:DicePlayer, bet: DiceBet) {
+        if (bet.amountBetValue!! > 0 && bet.amountBetValue!! < (player.numberOfDieToRoll + liar.numberOfDieToRoll) && bet.faceBetValue!! <= 6 ){
+            if(bet.amountBetValue!! <= player.numberOfDicePerValue[bet.faceBetValue?.minus(1)!!] ){
+                // Not a lie
+                textViewCurrentBet.text = getString(R.string.truth)
+                player.numberOfDieToRoll--
+            }
+            else{
+                textViewCurrentBet.text = getString(R.string.lie)
+                liar.numberOfDieToRoll--
+            }
+        }
+        else {
+            textViewCurrentBet.text = getString(R.string.incorrect_bet)
+        }
     }
 
+    @SuppressLint("SetTextI18n")
+    private fun checkGameOver(player: DicePlayer, computer: DicePlayer){
+        if(player.numberOfDieToRoll == 0) {
+            textViewCurrentBet.text = "You win!\nShake your phone to play again"
+            money=+1000
+        }
+        if(computer.numberOfDieToRoll == 0) {
+            textViewCurrentBet.text = "You loose!\n Shake your phone to play again"
+            money=-1000
+            //TODO:Check Loose money
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val editor = userPreferences?.edit()
+        editor?.putInt(UserPreferences.money,money)
+        editor?.apply()
+        val intentHomeActivity = Intent(this, HomeActivity::class.java)
+        startActivity(intentHomeActivity)
+    }
+    // ========================== FUNCTIONS TO PRINT IMAGES ======================================
+    //Print dice images corresponding to values
     private fun printDiceImages(player: DicePlayer, layout: LinearLayout) {
-        val diceImages = player
-        for (i in 0 until diceImages.dice.size) {
-            val rand = (0 until diceImages.dice.size).random()
-            setImageDie(diceImages, layout)
-            diceImages.dice.removeAt(rand)
+        for(i in 0 until player.dice.size) {
+            val image = ImageView(this).apply {
+                val id = context.resources.getIdentifier(
+                    getImageString(player, i),
+                    "drawable",
+                    context.packageName
+                )
+                setImageResource(id)
+                adjustViewBounds = true
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                layoutParams.width = 200
+                layoutParams.height = 300
+            }
+            layout.addView(image)
         }
     }
 
-    private fun setImageDie(player: DicePlayer, layout: LinearLayout) {
-        val image = ImageView(this).apply {
-            val id = context.resources.getIdentifier(
-                getImageString(player),
-                "drawable",
-                context.packageName
-            )
-            setImageResource(id)
-
-            adjustViewBounds = true
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            layoutParams.width = 200
-            layoutParams.height = 300
-        }
-        layout.addView(image)
-    }
-
-    private fun getImageString(player: DicePlayer): String {
-        return when (player.dice.last()) {
+    //Load images names
+    private fun getImageString(player : DicePlayer,i :Int): String {
+        return when (player.dice[i]) {
             1 -> {
                 "die1"
             }
