@@ -1,6 +1,9 @@
 package fr.isen.nevadaodyssey
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +15,8 @@ import kotlinx.android.synthetic.main.activity_slotmachine.*
 import kotlin.random.Random
 
 class SlotMachineActivity : AppCompatActivity(), IEventEnd {
+    var userPreferences: SharedPreferences? = null
+    private var money =0
     override fun eventEnd(result: Int, count: Int){
         if(countDown < 2)
             countDown++
@@ -27,28 +32,28 @@ class SlotMachineActivity : AppCompatActivity(), IEventEnd {
                 Toast.makeText(this,"Win",Toast.LENGTH_SHORT).show()
                 when (image.value) {
                     Util.BAR.number -> {
-                        Common.SCORE += Util.BAR.score//3 barres
-                        txt_score.text = Common.SCORE.toString()
+                        money += Util.BAR.score//3 barres
+                        txt_score.text = money.toString()
                     }
                     Util.LEMON.number -> {
-                        Common.SCORE += Util.LEMON.score//3 citrons
-                        txt_score.text = Common.SCORE.toString()
+                        money += Util.LEMON.score//3 citrons
+                        txt_score.text = money.toString()
                     }
                     Util.WATERMELON.number -> {
-                        Common.SCORE += Util.WATERMELON.score//3 pasteques
-                        txt_score.text = Common.SCORE.toString()
+                        money += Util.WATERMELON.score//3 pasteques
+                        txt_score.text = money.toString()
                     }
                     Util.ORANGE.number -> {
-                        Common.SCORE += Util.ORANGE.score//3 oranges
-                        txt_score.text = Common.SCORE.toString()
+                        money += Util.ORANGE.score//3 oranges
+                        txt_score.text = money.toString()
                     }
                     Util.SEVEN.number -> {
-                        Common.SCORE +=Util.SEVEN.score//3 septs
-                        txt_score.text = Common.SCORE.toString()
+                        money +=Util.SEVEN.score//3 septs
+                        txt_score.text = money.toString()
                     }
                     Util.TRIPLE.number -> {
-                        Common.SCORE += Util.TRIPLE.score//3 triples
-                        txt_score.text = Common.SCORE.toString()
+                        money += Util.TRIPLE.score//3 triples
+                        txt_score.text = money.toString()
                     }
                 }
             }
@@ -64,8 +69,10 @@ class SlotMachineActivity : AppCompatActivity(), IEventEnd {
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        userPreferences = getSharedPreferences(UserPreferences.name, Context.MODE_PRIVATE)
+        money = userPreferences?.getInt(UserPreferences.money,0) ?: 0
         setContentView(R.layout.activity_slotmachine)
-
+        txt_score.text=money.toString()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
         image.setEventEnd(this@SlotMachineActivity)
@@ -73,7 +80,7 @@ class SlotMachineActivity : AppCompatActivity(), IEventEnd {
         image3.setEventEnd(this@SlotMachineActivity)
 
         up.setOnClickListener {
-            if(Common.SCORE >= 50)
+            if(money>= 50)
             {
                 up.visibility = View.GONE
                 down.visibility = View.VISIBLE
@@ -81,13 +88,31 @@ class SlotMachineActivity : AppCompatActivity(), IEventEnd {
                 image2.setValueRandom(Random.nextInt(6),Random.nextInt(15-5+1)+5)//6 images
                 image3.setValueRandom(Random.nextInt(6),Random.nextInt(15-5+1)+5)//6 images
 
-                Common.SCORE -= 50
-                txt_score.text = Common.SCORE.toString()
+                money -= 50
+                txt_score.text = money.toString()
             }
             else
             {
                 Toast.makeText(this,"Pas Assez Riche",Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val editor = userPreferences?.edit()
+        editor?.putInt(UserPreferences.money,money)
+        editor?.apply()
+        val intentHomeActivity = Intent(this, HomeActivity::class.java)
+        startActivity(intentHomeActivity)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val editor = userPreferences?.edit()
+        editor?.putInt(UserPreferences.money,money)
+        editor?.apply()
+        //val intentHomeActivity = Intent(this, HomeActivity::class.java)
+        //startActivity(intentHomeActivity)
+
     }
 }

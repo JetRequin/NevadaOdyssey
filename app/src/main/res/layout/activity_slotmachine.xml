@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg"
+    android:background="@color/colorGreenTheme"
     tools:context=".SlotMachineActivity">
 
     <TextView
@@ -15,6 +15,28 @@
         android:text="@string/money_slotmachine"
         android:textColor="@android:color/white"></TextView>
 
+
+    <ImageView
+        android:id="@+id/up"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/layout_bar"
+        android:layout_alignBottom="@+id/layout_bar"
+        android:layout_marginEnd="-10dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/up"></ImageView>
+
+    <ImageView
+        android:id="@+id/down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/layout_bar"
+        android:layout_marginStart="-25dp"
+        android:layout_marginBottom="40dp"
+        android:layout_toEndOf="@+id/layout_bar"
+        android:src="@drawable/down"
+        android:visibility="gone"></ImageView>
 
     <FrameLayout
         android:id="@+id/layout_bar"
@@ -39,7 +61,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-               ></fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.ImageViewSlotMachineScroller>
+                ></fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.ImageViewSlotMachineScroller>
             <fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.ImageViewSlotMachineScroller
                 android:id="@+id/image3"
                 android:layout_gravity="center_vertical"
@@ -49,29 +71,6 @@
 
         </LinearLayout>
     </FrameLayout>
-
-
-    <ImageView
-        android:id="@+id/down"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/layout_bar"
-        android:layout_marginStart="0dp"
-        android:layout_marginBottom="-15dp"
-        android:layout_toEndOf="@+id/layout_bar"
-        android:src="@drawable/down"></ImageView>
-
-    <ImageView
-        android:id="@+id/up"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/layout_bar"
-        android:layout_marginStart="0dp"
-        android:layout_marginBottom="20dp"
-        android:layout_toEndOf="@+id/layout_bar"
-        android:src="@drawable/up"></ImageView>
 
 
 </RelativeLayout>
