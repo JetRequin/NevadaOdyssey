@@ -7,12 +7,14 @@ import android.content.SharedPreferences
 import com.squareup.seismic.ShakeDetector
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_dice.*
+import java.util.*
 
 /* =============================== LIAR'S DICE RULES ==========================
     Each player has five standard 6-sided dice
@@ -37,6 +39,7 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
     var money = 0
     private var userPreferences: SharedPreferences? = null
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dice)
@@ -54,9 +57,12 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
         val player = DicePlayer()
         val computer = DicePlayer()
         val bet = DiceBet()
+        bet.faceBetValue = 0
+        bet.amountBetValue = 0
 
         //Init turn with the correct amount of die to roll and first turn
         initTurn(player, computer)
+        printDiceImages(player, playerDiceLayout)
         //First turn
         playTurn(player,computer,bet)
 
@@ -71,19 +77,31 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val editor = userPreferences?.edit()
+        editor?.putInt(UserPreferences.money,money)
+        editor?.apply()
+        val intentHomeActivity = Intent(this, HomeActivity::class.java)
+        startActivity(intentHomeActivity)
+    }
+
     override fun hearShake() {
         val player = DicePlayer()
         val computer = DicePlayer()
         initTurn(player, computer)
+
         Toast.makeText(applicationContext,"SHAKE",Toast.LENGTH_SHORT).show()
     }
 
 
     //Init party: roll the dice for both sides, choose the first better
     private fun initTurn(player: DicePlayer, computer: DicePlayer) {
+        textViewCurrentBet.text = getString(R.string.place_bet)
         //Give each player his dice
         getDiceHand(player)
         getDiceHand(computer)
+
         printDiceImages(player, playerDiceLayout)
 
         //Choose who is going to bet first
@@ -97,12 +115,11 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
 
     @SuppressLint("SetTextI18n")
     private fun playTurn(player: DicePlayer, computer: DicePlayer, bet:DiceBet) {
-        textViewCurrentBet.text = "Place a bet"
 // ====================== PLAYER BET ===========================================================
         if (player.isBetting) {
             // Read bet
-            bet.faceBetValue = editTextFaceNumber.text.toString().toIntOrNull()
-            bet.amountBetValue = editTextHighestBet.text.toString().toIntOrNull()
+            bet.faceBetValue = editTextFaceNumber.text.toString().toIntOrNull()!!
+            bet.amountBetValue = editTextHighestBet.text.toString().toIntOrNull()!!
 
             textViewCurrentBet.text = "Your bet:\n" + "Face: "+ bet.faceBetValue.toString() +"\nNumber: "+ bet.amountBetValue.toString()
             //Turn change
@@ -117,12 +134,9 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
                 bet.amountBetValue = 3
                 bet.faceBetValue = 3
             }
-/*
-            if (bet.amountBetValue <= computer.numberOfDicePerValue[bet.faceBetValue!!]){
-                    bet.amountBetValue = computer.numberOfDicePerValue[bet.faceBetValue!!] + 1
+            if (bet.amountBetValue <= computer.numberOfDicePerValue[bet.faceBetValue]){
+                    bet.amountBetValue = computer.numberOfDicePerValue[bet.faceBetValue] + 1
             }
-
- */
                 else {
                     turnLieResult(computer,player,bet)
                 }
@@ -133,21 +147,21 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
     }
 
     private fun turnLieResult(player: DicePlayer, liar:DicePlayer, bet: DiceBet) {
-
-        /*if (bet.amountBetValue!! > 0 && (bet.amountBetValue!! < (player.numberOfDieToRoll + liar.numberOfDieToRoll)) && bet.faceBetValue!! <= 6 ){
-            if(bet.amountBetValue!! <= player.numberOfDicePerValue[bet.faceBetValue!!] ){
+        if (bet.amountBetValue > 0 && bet.amountBetValue < (player.numberOfDieToRoll + liar.numberOfDieToRoll) && bet.faceBetValue<= 6 ){
+            if(bet.amountBetValue <=  liar.numberOfDicePerValue[bet.faceBetValue] ){
                 // Not a lie
                 textViewCurrentBet.text = getString(R.string.truth)
-                player.numberOfDieToRoll--
+                player.numberOfDieToRoll = player.numberOfDieToRoll - 1
+
             }
             else{
                 textViewCurrentBet.text = getString(R.string.lie)
-                liar.numberOfDieToRoll--
+                liar.numberOfDieToRoll = liar.numberOfDieToRoll - 1
             }
         }
         else {
             textViewCurrentBet.text = getString(R.string.incorrect_bet)
-        }*/
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -157,23 +171,16 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
             money=+1000
         }
         if(computer.numberOfDieToRoll == 0) {
-            textViewCurrentBet.text = "You loose!\n Shake your phone to play again"
+            textViewCurrentBet.text = "Game over\n Shake your phone to play again"
             money=-1000
-            //TODO:Check Loose money
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val editor = userPreferences?.edit()
-        editor?.putInt(UserPreferences.money,money)
-        editor?.apply()
-        val intentHomeActivity = Intent(this, HomeActivity::class.java)
-        startActivity(intentHomeActivity)
-    }
     // ========================== FUNCTIONS TO PRINT IMAGES ======================================
     //Print dice images corresponding to values
     private fun printDiceImages(player: DicePlayer, layout: LinearLayout) {
+        layout.removeAllViewsInLayout()
+
         for(i in 0 until player.dice.size) {
             val image = ImageView(this).apply {
                 val id = context.resources.getIdentifier(

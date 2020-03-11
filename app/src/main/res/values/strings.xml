@@ -31,8 +31,8 @@
     <string name="textViewAmount">Number</string>
     <string name="incorrect_bet">Incorrect bet value</string>
     <string name="shake_dice">Shake your phone to begin playing</string>
-    <string name="truth">It was true !</string>
-    <string name="lie">It was a lie!</string>
+    <string name="truth">Shake your phone to play</string>
+    <string name="lie">Shake your phone to play</string>
 
     //Used on activity_roulette.xml
     <string name="spin">SPIN</string>
@@ -43,5 +43,7 @@
     <string name="wheel_bet">Bet</string>
     <string name="bet_a_number">Bet a number</string>
     <string name="string_0">0</string>
+    <string name="place_bet">Place a bet</string>
+    <string name="button_continue">Continue</string>
 
 </resources>

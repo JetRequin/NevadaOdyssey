@@ -1,6 +1,7 @@
 package fr.isen.nevadaodyssey
 
 class DiceBet {
-    var amountBetValue:Int? = 0
-    var faceBetValue:Int? = 0
+    var amountBetValue = 0
+    var faceBetValue  = 0
 }
+

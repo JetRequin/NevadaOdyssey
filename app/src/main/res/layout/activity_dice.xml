@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:textSize="24sp"
+        android:textColor="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.045"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,14 +48,15 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline13"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline17"
-        app:layout_constraintTop_toTopOf="@+id/guideline16" />
+        app:layout_constraintTop_toTopOf="@+id/guideline16"
+        app:layout_constraintVertical_bias="0.6" />
 
     <EditText
         android:id="@+id/editTextHighestBet"
         android:layout_width="44dp"
         android:layout_height="46dp"
         android:ems="10"
-        android:hint="@string/string_0"
+        android:text="@string/string_0"
         android:importantForAutofill="no"
         android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/guideline15"
@@ -114,7 +116,7 @@
         android:layout_width="44dp"
         android:layout_height="46dp"
         android:ems="10"
-        android:hint="@string/string_0"
+        android:text="@string/string_0"
         android:importantForAutofill="no"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -131,7 +133,8 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline13"
         app:layout_constraintEnd_toStartOf="@+id/guideline17"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline16" />
+        app:layout_constraintTop_toTopOf="@+id/guideline16"
+        app:layout_constraintVertical_bias="0.6" />
 
     <TextView
         android:id="@+id/textViewCurrentBet"
