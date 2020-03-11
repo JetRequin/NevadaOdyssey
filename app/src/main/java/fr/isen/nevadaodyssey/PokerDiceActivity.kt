@@ -13,7 +13,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_dice.*
-import kotlinx.android.synthetic.main.activity_roulette.*
 
 /* =============================== LIAR'S DICE RULES ==========================
     Each player has five standard 6-sided dice
@@ -32,20 +31,6 @@ or they can challenge the previous bid.
 If the player challenges the previous bid, all players reveal their dice.
     If the bid is matched or exceeded, the bidder wins.
     Otherwise the challenger wins.
-    p
-
-
-
-    //37 sectors, 9,72 deg each
-    private var factor : Float = 4.86f
-
-    @SuppressLint("SetTextI18n")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_roulette)
-        r = Random()
-
-        moneyAmount.text = "Money:$money$"
  ============================================================================== */
 
 class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
@@ -148,8 +133,9 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
     }
 
     private fun turnLieResult(player: DicePlayer, liar:DicePlayer, bet: DiceBet) {
-        if (bet.amountBetValue!! > 0 && bet.amountBetValue!! < (player.numberOfDieToRoll + liar.numberOfDieToRoll) && bet.faceBetValue!! <= 6 ){
-            if(bet.amountBetValue!! <= player.numberOfDicePerValue[bet.faceBetValue?.minus(1)!!] ){
+
+        /*if (bet.amountBetValue!! > 0 && (bet.amountBetValue!! < (player.numberOfDieToRoll + liar.numberOfDieToRoll)) && bet.faceBetValue!! <= 6 ){
+            if(bet.amountBetValue!! <= player.numberOfDicePerValue[bet.faceBetValue!!] ){
                 // Not a lie
                 textViewCurrentBet.text = getString(R.string.truth)
                 player.numberOfDieToRoll--
@@ -161,7 +147,7 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
         }
         else {
             textViewCurrentBet.text = getString(R.string.incorrect_bet)
-        }
+        }*/
     }
 
     @SuppressLint("SetTextI18n")
