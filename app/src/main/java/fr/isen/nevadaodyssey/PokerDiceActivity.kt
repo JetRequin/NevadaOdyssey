@@ -43,7 +43,7 @@ class PokerDiceActivity: AppCompatActivity(),ShakeDetector.Listener{
 
         userPreferences = getSharedPreferences(UserPreferences.name, Context.MODE_PRIVATE)
         money = userPreferences?.getInt(UserPreferences.money,0) ?: 0
-        moneyAmountDice.text = "Money:$money$"
+        textViewUserMoney.text = "Money:$money$"
 
 // ==== SHAKE DETECTION ===========================================
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
