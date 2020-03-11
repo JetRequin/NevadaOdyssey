@@ -90,8 +90,21 @@
         android:layout_marginStart="248dp"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:hint="mise"
         android:inputType="number"
         android:text="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/numberBet"
+        android:layout_width="125dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="560dp"
+        android:ems="10"
+        android:hint="bet a number"
+        android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
