@@ -29,6 +29,7 @@ class BlackJackActivity : AppCompatActivity() {
         var resetParty = false
         var resetDouble = false
         userPreferences = getSharedPreferences(UserPreferences.name, Context.MODE_PRIVATE)
+        var name = userPreferences?.getString(UserPreferences.name,null)?: ""
         var money = userPreferences?.getInt(UserPreferences.money,0) ?: 0
         for(i in 0 until deck.size)
         {
@@ -36,7 +37,8 @@ class BlackJackActivity : AppCompatActivity() {
         }
         Log.d("Deck", "This is the size of the deck :"+deck.size)
         player.initMoney(money)
-        moneyShow.text=player.money.toString()+"$"
+        textViewUserMoney.text=player.money.toString()+"$"
+        textViewUserName.text=name
         Log.d("InitParty", "You have "+ player.money+" dollars")
         initParty(deck,player, dealer,playerSet,dealerSet)
         showConsoleCards(player, dealer, deck)
@@ -53,6 +55,7 @@ class BlackJackActivity : AppCompatActivity() {
                     winnerText.text="You loose"
                     Log.d("InitParty", "You have "+ player.getTotalPoints()+" points")
                     Log.d("InitParty", "Dealer has "+ dealer.getTotalPoints()+" points")
+                    textViewUserMoney.text=player.money.toString()+"$"
                     removeCards(dealerSet)
                     showAllCardsEvenHide(dealer,dealerSet)
                     resetParty=true
@@ -84,6 +87,7 @@ class BlackJackActivity : AppCompatActivity() {
                     showAllCardsEvenHide(dealer,dealerSet)
 
                 }
+                textViewUserMoney.text=player.money.toString()+"$"
                 resetParty=true
                 resetDouble=true
                 betBar.visibility = View.GONE
@@ -104,6 +108,7 @@ class BlackJackActivity : AppCompatActivity() {
                 resetParty=false
                 resetDouble=false
                 moneyShow.text=player.money.toString()+"$"
+                textViewUserMoney.text=player.money.toString()+"$"
                 betBar.visibility = View.VISIBLE
             }
         }
@@ -141,6 +146,7 @@ class BlackJackActivity : AppCompatActivity() {
 
                     }
                 }
+                textViewUserMoney.text=player.money.toString()+"$"
                 resetParty=true
                 resetDouble=true
                 betBar.visibility = View.GONE
@@ -156,7 +162,7 @@ class BlackJackActivity : AppCompatActivity() {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 // Display the current progress of SeekBar
                 bet=(i*player.money)/100
-                moneyShow.text=(player.money-bet).toString()+"$"
+                moneyShow.text=(bet).toString()+"$"
 
             }
 
