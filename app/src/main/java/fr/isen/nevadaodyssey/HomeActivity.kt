@@ -1,12 +1,12 @@
 package fr.isen.nevadaodyssey
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.activity_login.*
 
 class HomeActivity : AppCompatActivity() {
 
@@ -18,12 +18,10 @@ class HomeActivity : AppCompatActivity() {
 
         userPreferences = getSharedPreferences(UserPreferences.name, Context.MODE_PRIVATE)
         val name = userPreferences?.getString(UserPreferences.name,null)?: ""
-        var money = userPreferences?.getInt(UserPreferences.money,0) ?: 0
+        val money = userPreferences?.getInt(UserPreferences.money,0) ?: 0
 
         textViewUserName.text = name
         textViewUserMoney.text = "Money:"+ money.toString() +"$"
-
-        //TODO:To each image button, link corresponding activity
 
              imageButtonBlackJack.setOnClickListener{
                  val intentBlackJack = Intent(this, BlackJackActivity::class.java)
@@ -33,19 +31,20 @@ class HomeActivity : AppCompatActivity() {
 
              imageButtonPokerDice.setOnClickListener {
                  val intentPokerDice = Intent(this, PokerDiceActivity::class.java)
+                 intentPokerDice.putExtra("money", money)
                  startActivity(intentPokerDice)
              }
 
              imageButtonSlotMachine.setOnClickListener {
                  val intentSlotMachine = Intent(this, SlotMachineActivity::class.java)
+                 intentSlotMachine.putExtra("money", money)
                  startActivity(intentSlotMachine)
              }
 
-        /*
-      imageButtonRoulette.setOnClickListener{
-           val intentRoulette = Intent(this, RouletteActivity::class.java)
-           startActivity(intentRoulette)
-       }
-  */
+            imageButtonRoulette.setOnClickListener{
+                val intentRoulette = Intent(this, RouletteActivity::class.java)
+                intentRoulette.putExtra("money", money)
+                startActivity(intentRoulette)
+            }
     }
 }

@@ -61,7 +61,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-               ></fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.ImageViewSlotMachineScroller>
+                ></fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.ImageViewSlotMachineScroller>
             <fr.isen.nevadaodyssey.ImageViewSlotMachineScroller.ImageViewSlotMachineScroller
                 android:id="@+id/image3"
                 android:layout_gravity="center_vertical"
